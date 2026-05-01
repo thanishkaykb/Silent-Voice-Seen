@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Silent Voice 🤟</title>
+<title>Silent Voice, Seen.</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
@@ -149,8 +149,8 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
   <div class="blob" style="width:700px;height:700px;background:radial-gradient(circle,rgba(37,99,235,.15) 0%,transparent 70%);top:-250px;left:-200px;animation:pulse 5s ease infinite;"></div>
   <div class="blob" style="width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 70%);bottom:-200px;right:-180px;animation:pulse 6s ease infinite 2.5s;"></div>
   <div style="position:relative;z-index:1;text-align:center;animation:fadeUp .8s ease;padding:0 24px;">
-    <div style="font-size:72px;margin-bottom:4px;filter:drop-shadow(0 0 32px rgba(37,99,235,.55));">🤟</div>
-    <h1 class="gd" style="font-size:clamp(3rem,8vw,5rem);font-weight:800;letter-spacing:-3px;line-height:1.05;margin-bottom:16px;">Silent Voice</h1>
+    <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;">Silent Voice, Seen</h1>
+    <img src="logo.jpeg" alt="Silent Voice, Seen Logo" style="width:280px;max-width:100%;margin:0 auto 16px;border-radius:16px;filter:drop-shadow(0 0 32px rgba(255,255,255,0.05));display:block;" />
     <p style="color:#484f58;font-size:17px;max-width:480px;line-height:1.85;margin:0 auto 52px;">Two-way AI bridge between sign language and the world.<br>Communicate freely, without barriers.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
       <button class="btn-p" style="font-size:16px;padding:14px 34px;" onclick="showAuth('signup')">Get Started Free →</button>
@@ -199,7 +199,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
 <div id="app" style="display:none;">
   <!-- Topbar -->
   <div class="topbar">
-    <span class="logo" style="font-weight:800;font-size:19px;">🤟 <span class="gd">Silent Voice</span></span>
+    <img src="logo.jpeg" alt="Silent Voice, Seen Logo" style="height:44px;border-radius:6px;cursor:pointer;" onclick="showLanding()" />
     <div style="flex:1;"></div>
     <button class="btn-sm" id="key-toggle-btn" onclick="toggleKeyPanel()" style="font-size:11px;">⚙ Set API Key</button>
     <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:40px;padding:4px 12px 4px 5px;">
