@@ -186,13 +186,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
       <input class="inp" type="email" id="s-email" placeholder="you@email.com" style="margin-bottom:14px;"/>
       <label class="lbl">Password (min 6 chars)</label>
       <input class="inp" type="password" id="s-pass" placeholder="Choose a password" style="margin-bottom:14px;"/>
-      <label class="lbl">Preferred Language</label>
-      <select class="sel" id="s-lang" style="width:100%;margin-bottom:20px;">
-        <option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option>
-        <option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option>
-        <option>French</option><option>Spanish</option><option>German</option><option>Arabic</option>
-        <option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option>
-      </select>
+
       <div id="s-err" class="alert alert-err" style="display:none;"></div>
       <button class="btn-p" style="width:100%;justify-content:center;margin-top:6px;" onclick="doSignup()">Create Account →</button>
       <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:13px;">Already have account? <a style="color:#2f81f7;cursor:pointer;" onclick="switchAuthMode('login')">Sign in →</a></p>
@@ -247,10 +241,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
       <!-- Text → Sign -->
       <div class="card">
         <div class="card-title">✍️ Text → Sign Language <span class="badge badge-blue">INSTANT</span></div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Output language:</span>
-          <select class="sel" id="t2s-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
-        </div>
+
         <textarea class="inp" id="t2s-input" rows="4" placeholder="Type a message… e.g. Hello, thank you, I love you, please help me" onkeydown="if(event.ctrlKey&&event.key==='Enter')translateText()"></textarea>
         <div class="btn-row">
           <button class="btn-p" id="t2s-btn" onclick="translateText()">▶ Translate to Signs</button>
@@ -265,10 +256,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
         <p style="color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.75;">
           Click <strong style="color:var(--text);">🎙 Start Speaking</strong> and talk — your words appear automatically in the box below. Then click <strong style="color:var(--text);">Translate to Signs</strong>.
         </p>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Output language:</span>
-          <select class="sel" id="audio-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
-        </div>
+
         <div class="btn-row" style="margin-top:0;margin-bottom:14px;">
           <button class="btn-red" id="audio-mic-btn" onclick="toggleListening()">🎙 Start Speaking</button>
           <span id="audio-listen-badge" style="display:none;font-size:12px;color:#34d399;animation:pulse 1s ease infinite;">● Listening…</span>
@@ -288,10 +276,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
       <!-- Sign → Text -->
       <div class="card">
         <div class="card-title">🎥 Sign Language → Text <span class="badge badge-blue">AI VISION</span></div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Translate to:</span>
-          <select class="sel" id="v2t-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
-        </div>
+
         <div id="v2t-apikey-warn" class="alert alert-warn" style="display:none;">⚠️ Add your API key (⚙ button above) to enable AI image analysis.</div>
         <label class="upload-zone" id="v2t-upload-zone">
           <input type="file" accept="image/*,video/*" onchange="handleUpload(event)"/>
@@ -321,8 +306,7 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
           <span style="font-size:13px;color:var(--muted);">Mode:</span>
           <select class="sel" id="cam-mode" onchange="updateCamMode()"><option value="photo">📷 Take Photo</option><option value="video">🎥 Record Video</option></select>
-          <span style="font-size:13px;color:var(--muted);margin-left:8px;">Translate to:</span>
-          <select class="sel" id="cam-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
+
         </div>
         <div class="cam-box" id="cam-box">
           <video id="cam-video" autoplay muted playsinline style="display:none;"></video>
@@ -661,7 +645,7 @@ async function doSignup(){
   const name=document.getElementById("s-name").value.trim();
   const email=document.getElementById("s-email").value.trim().toLowerCase();
   const pass=document.getElementById("s-pass").value;
-  const lang=document.getElementById("s-lang").value;
+  const lang="English";
   const errEl=document.getElementById("s-err");
   const showErr=msg=>{errEl.textContent=msg;errEl.style.display="block";};
   errEl.style.display="none";
@@ -734,11 +718,7 @@ function loginUser(u,navigate){
   currentUser=u;
   document.getElementById("user-avatar").textContent=(u.name||"U")[0].toUpperCase();
   document.getElementById("user-name").textContent=(u.name||"User").split(" ")[0];
-  // Pre-select preferred language in all selects
-  ["t2s-lang","audio-lang","v2t-lang","cam-lang"].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){for(let i=0;i<el.options.length;i++){if(el.options[i].value===u.lang||el.options[i].text===u.lang){el.selectedIndex=i;break;}}}
-  });
+
   if(navigate)showApp();
   else showApp();
 }
@@ -1062,7 +1042,7 @@ function renderSignPlayerFull(containerId,signs,trans,lang){
 async function translateText(){
   const text=document.getElementById("t2s-input").value.trim();
   if(!text){toast("Type something first!","error");return;}
-  const lang=document.getElementById("t2s-lang").value;
+  const lang="English";
   const btn=document.getElementById("t2s-btn");
   btn.innerHTML='<span class="spin"></span> Translating…'; btn.disabled=true;
 
@@ -1152,7 +1132,7 @@ function clearAudio(){
 async function translateAudio(){
   const text=document.getElementById("audio-text").value.trim();
   if(!text){toast("Speak something or type text first!","error");return;}
-  const lang=document.getElementById("audio-lang").value;
+  const lang="English";
   const btn=document.getElementById("audio-btn");
   btn.innerHTML='<span class="spin"></span> Processing…'; btn.disabled=true;
 
@@ -1222,7 +1202,7 @@ function clearUpload(){
 async function analyzeUpload(){
   if(!uploadB64){toast("Upload an image or video first.","error");return;}
   if(!DB.getKey() && !DB.getGeminiKey()){toast("Add your Anthropic or Gemini API key (⚙ button) to analyze signs.","warn");return;}
-  const lang=document.getElementById("v2t-lang").value;
+  const lang="English";
   const btn=document.getElementById("v2t-btn");
   btn.innerHTML='<span class="spin"></span> Analyzing…'; btn.disabled=true;
   
@@ -1334,7 +1314,7 @@ function toggleRecording(){
 }
 
 async function performCamAnalysis(b64) {
-  const lang=document.getElementById("cam-lang").value;
+  const lang="English";
   try{
     const raw=await callAI(
       `You are an ASL (American Sign Language) expert. Analyze this webcam frame.
@@ -1426,7 +1406,7 @@ async function captureAndAnalyze(){
   document.getElementById("cam-captured-img").src=imgUrl;
   capturedDiv.style.display="block";
 
-  const lang=document.getElementById("cam-lang").value;
+  const lang="English";
   const btn=document.getElementById("cam-capture-btn");
   btn.innerHTML='<span class="spin"></span> Analyzing…'; btn.disabled=true;
   try{
