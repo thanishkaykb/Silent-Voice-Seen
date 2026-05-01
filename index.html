@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Silent Voice 🤟</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#010409;--surf:#0d1117;--surf2:#161b22;
+  --border:rgba(255,255,255,0.08);--accent:#2563eb;--accent2:#7c3aed;
+  --text:#e6edf3;--muted:#6e7681;--success:#238636;--warn:#9e6a03;--err:#6e1010;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3,.logo{font-family:'Space Grotesk',system-ui,sans-serif;}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#21262d;border-radius:4px}
+input,textarea,select{font-family:'Inter',system-ui,sans-serif;}
+button{cursor:pointer;font-family:'Space Grotesk',system-ui,sans-serif;transition:opacity .15s,transform .1s;}
+button:hover{opacity:.85;}button:active{transform:scale(.97);}
+select{position:relative;z-index:200;}
+
+/* Layout */
+#app{display:flex;flex-direction:column;min-height:100vh;}
+.topbar{height:60px;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--border);background:rgba(1,4,9,.95);backdrop-filter:blur(14px);position:sticky;top:0;z-index:500;gap:14px;}
+.tabs{display:flex;gap:2px;padding:10px 24px 0;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:400;overflow-x:auto;}
+.tab-btn{padding:9px 18px;border-radius:9px 9px 0 0;border:1px solid transparent;border-bottom:none;background:transparent;color:#484f58;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Space Grotesk',system-ui,sans-serif;transition:all .2s;}
+.tab-btn.active{background:var(--surf);border-color:var(--border);color:var(--text);}
+.body{flex:1;padding:24px;max-width:980px;width:100%;margin:0 auto;}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:24px 22px;margin-bottom:20px;}
+.card-title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.badge{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-blue{background:rgba(37,99,235,.18);color:#58a6ff;}
+.badge-green{background:rgba(16,185,129,.18);color:#34d399;}
+
+/* Forms */
+.inp{width:100%;padding:11px 14px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;}
+.inp:focus{border-color:var(--accent);}
+.sel{padding:9px 13px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;outline:none;cursor:pointer;}
+.sel:focus{border-color:var(--accent);}
+textarea.inp{resize:vertical;line-height:1.7;}
+label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+
+/* Buttons */
+.btn-p{padding:11px 22px;background:linear-gradient(135deg,#2563eb,#7c3aed);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;}
+.btn-s{padding:10px 18px;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;color:var(--muted);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
+.btn-sm{padding:7px 13px;background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--muted);font-weight:600;font-size:12px;}
+.btn-red{padding:11px 22px;background:linear-gradient(135deg,#dc2626,#9f1239);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+
+/* Alerts */
+.alert{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;margin-bottom:14px;}
+.alert-warn{background:#18120a;border:1px solid #9e6a03;color:#d29922;}
+.alert-err{background:#1c0a0a;border:1px solid #6e1010;color:#ffa198;}
+.alert-ok{background:#051a0e;border:1px solid #238636;color:#3fb950;}
+.alert-info{background:#0d1a2e;border:1px solid #2f81f7;color:#58a6ff;}
+
+/* Sign display */
+.sign-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.chip{background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;transition:all .2s;text-align:center;min-width:74px;user-select:none;}
+.chip.active{background:#0d2040;border-color:var(--accent);}
+.chip-emoji{font-size:22px;margin-bottom:2px;display:block;}
+.chip-label{font-size:12px;font-weight:700;color:var(--muted);}
+.chip.active .chip-label{color:#58a6ff;}
+.sign-box{background:#0a0f1a;border:1.5px solid #1f3550;border-radius:16px;overflow:hidden;box-shadow:0 0 24px rgba(37,99,235,.15);}
+.sign-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sign-body{padding:20px 18px;display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
+.sign-anim-box{width:150px;height:150px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sign-emoji-big{font-size:82px;line-height:1;display:block;}
+.step-row{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:11px;}
+.subtitle-box{margin-top:12px;background:var(--surf2);border:1px solid var(--border);border-radius:11px;padding:12px 16px;}
+.hand-img{object-fit:contain;border-radius:8px;}
+.hand-fallback{display:flex;align-items:center;justify-content:center;background:#0d1117;border-radius:12px;font-size:48px;}
+.fs-strip{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.fs-chip{background:var(--surf2);border:1.5px solid var(--border);border-radius:7px;padding:4px;text-align:center;cursor:pointer;transition:all .2s;min-width:38px;}
+.fs-chip.active{background:#0d2040;border-color:var(--accent);}
+
+/* Letter grid */
+.letter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;}
+.letter-card{background:#0d1117;border:1.5px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .25s;user-select:none;}
+.letter-card:hover,.letter-card.active{border-color:var(--accent);background:#0d2040;transform:translateY(-2px);}
+
+/* Signs grid */
+.signs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:12px;}
+.sign-card{background:#0d1117;border:1.5px solid var(--border);border-radius:14px;padding:14px 10px;cursor:pointer;transition:all .25s;text-align:center;user-select:none;}
+.sign-card:hover{transform:translateY(-2px);}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:26px 20px;text-align:center;cursor:pointer;position:relative;transition:all .2s;display:block;}
+.upload-zone:hover{border-color:var(--accent);background:rgba(37,99,235,.04);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* Camera */
+#cam-video{width:100%;display:block;border-radius:14px;}
+.cam-box{background:#0a0f1a;border-radius:14px;overflow:hidden;position:relative;min-height:270px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);margin-bottom:16px;}
+.live-badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.78);border-radius:20px;padding:5px 13px;display:flex;align-items:center;gap:8px;font-size:12px;}
+
+/* Landing */
+#landing{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;z-index:1000;}
+#auth{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.auth-card{background:var(--surf);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:420px;}
+.gd{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+
+/* Toast */
+#toasts{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:8px;z-index:9999;max-width:380px;}
+.toast{padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;border:1px solid;animation:fadeUp .3s ease;}
+
+/* History */
+.hist-item{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;}
+
+/* Spinner */
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;display:inline-block;flex-shrink:0;}
+
+/* Key panel */
+#key-panel{background:var(--surf2);border-bottom:1px solid var(--border);padding:10px 24px;display:none;gap:10px;align-items:center;flex-wrap:wrap;z-index:490;}
+#key-panel.open{display:flex;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{background:#ef4444}50%{background:#7f1d1d}}
+@keyframes wave{0%{transform:rotate(0)}25%{transform:rotate(-22deg)}75%{transform:rotate(22deg)}100%{transform:rotate(0)}}
+@keyframes forward{0%{transform:translateX(0)}50%{transform:translateX(22px)}100%{transform:translateX(0)}}
+@keyframes circle{0%{transform:translate(0,0)}25%{transform:translate(11px,-9px)}50%{transform:translate(0,-18px)}75%{transform:translate(-11px,-9px)}100%{transform:translate(0,0)}}
+@keyframes nod{0%{transform:translateY(0)}33%{transform:translateY(-14px)}66%{transform:translateY(10px)}100%{transform:translateY(0)}}
+@keyframes tap{0%{transform:translateY(0)}30%{transform:translateY(-13px)}60%{transform:translateY(0)}80%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+@keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-13px)}40%{transform:translateX(13px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}100%{transform:translateX(0)}}
+@keyframes lift{0%{transform:translateY(0)}50%{transform:translateY(-22px)}100%{transform:translateY(0)}}
+@keyframes hug{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes snap{0%{transform:rotate(0)}40%{transform:rotate(-32deg)}100%{transform:rotate(0)}}
+@keyframes rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(180deg)}100%{transform:rotateX(360deg)}}
+@keyframes tilt{0%{transform:rotate(0)}50%{transform:rotate(-44deg)}100%{transform:rotate(0)}}
+@keyframes sweep{0%{transform:translateX(-18px)}50%{transform:translateX(18px)}100%{transform:translateX(-18px)}}
+@keyframes point{0%{transform:scale(1)}50%{transform:scale(1.1) translateX(7px)}100%{transform:scale(1)}}
+@keyframes hold{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes glowpulse{0%,100%{box-shadow:0 0 16px rgba(37,99,235,.22)}50%{box-shadow:0 0 34px rgba(124,58,237,.4)}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LANDING ═══════════ -->
+<div id="landing">
+  <div class="blob" style="width:700px;height:700px;background:radial-gradient(circle,rgba(37,99,235,.15) 0%,transparent 70%);top:-250px;left:-200px;animation:pulse 5s ease infinite;"></div>
+  <div class="blob" style="width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 70%);bottom:-200px;right:-180px;animation:pulse 6s ease infinite 2.5s;"></div>
+  <div style="position:relative;z-index:1;text-align:center;animation:fadeUp .8s ease;padding:0 24px;">
+    <div style="font-size:72px;margin-bottom:4px;filter:drop-shadow(0 0 32px rgba(37,99,235,.55));">🤟</div>
+    <h1 class="gd" style="font-size:clamp(3rem,8vw,5rem);font-weight:800;letter-spacing:-3px;line-height:1.05;margin-bottom:16px;">Silent Voice</h1>
+    <p style="color:#484f58;font-size:17px;max-width:480px;line-height:1.85;margin:0 auto 52px;">Two-way AI bridge between sign language and the world.<br>Communicate freely, without barriers.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-p" style="font-size:16px;padding:14px 34px;" onclick="showAuth('signup')">Get Started Free →</button>
+      <button class="btn-s" style="font-size:15px;padding:13px 28px;color:#e6edf3;" onclick="showAuth('login')">Sign In</button>
+    </div>
+    <div style="display:flex;gap:28px;justify-content:center;margin-top:52px;color:#30363d;font-size:13px;flex-wrap:wrap;">
+      <span>🔁 Two-way translation</span><span>🎤 Voice to sign</span><span>📷 Live camera</span><span>🤙 Real hand photos</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ AUTH ═══════════ -->
+<div id="auth" style="display:none;">
+  <div class="blob" style="width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12) 0%,transparent 70%);top:-100px;left:-100px;"></div>
+  <div class="auth-card" style="position:relative;z-index:1;animation:fadeUp .4s ease;">
+    <div id="auth-login">
+      <h2 style="font-weight:800;font-size:26px;margin-bottom:6px;">Welcome back 👋</h2>
+      <p style="color:var(--muted);margin-bottom:26px;font-size:14px;">Sign in to your Silent Voice account</p>
+      <label class="lbl">Email</label>
+      <input class="inp" type="email" id="l-email" placeholder="you@email.com" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <label class="lbl" style="margin-top:4px;">Password</label>
+      <input class="inp" type="password" id="l-pass" placeholder="Your password" style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div id="l-err" class="alert alert-err" style="display:none;margin-top:10px;"></div>
+      <button class="btn-p" style="width:100%;justify-content:center;margin-top:14px;" onclick="doLogin()">Sign In →</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:13px;">No account? <a style="color:#2f81f7;cursor:pointer;" onclick="switchAuthMode('signup')">Create one →</a></p>
+    </div>
+    <div id="auth-signup" style="display:none;">
+      <h2 style="font-weight:800;font-size:26px;margin-bottom:6px;">Create account 🚀</h2>
+      <p style="color:var(--muted);margin-bottom:26px;font-size:14px;">Start communicating without barriers</p>
+      <label class="lbl">Full Name</label>
+      <input class="inp" type="text" id="s-name" placeholder="Your Name" style="margin-bottom:14px;"/>
+      <label class="lbl">Email Address</label>
+      <input class="inp" type="email" id="s-email" placeholder="you@email.com" style="margin-bottom:14px;"/>
+      <label class="lbl">Password (min 6 chars)</label>
+      <input class="inp" type="password" id="s-pass" placeholder="Choose a password" style="margin-bottom:14px;"/>
+      <label class="lbl">Preferred Language</label>
+      <select class="sel" id="s-lang" style="width:100%;margin-bottom:20px;">
+        <option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option>
+        <option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option>
+        <option>French</option><option>Spanish</option><option>German</option><option>Arabic</option>
+        <option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option>
+      </select>
+      <div id="s-err" class="alert alert-err" style="display:none;"></div>
+      <button class="btn-p" style="width:100%;justify-content:center;margin-top:6px;" onclick="doSignup()">Create Account →</button>
+      <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:13px;">Already have account? <a style="color:#2f81f7;cursor:pointer;" onclick="switchAuthMode('login')">Sign in →</a></p>
+    </div>
+    <p style="text-align:center;margin-top:12px;color:#21262d;font-size:12px;cursor:pointer;" onclick="showLanding()">← Back to home</p>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN APP ═══════════ -->
+<div id="app" style="display:none;">
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="logo" style="font-weight:800;font-size:19px;">🤟 <span class="gd">Silent Voice</span></span>
+    <div style="flex:1;"></div>
+    <button class="btn-sm" id="key-toggle-btn" onclick="toggleKeyPanel()" style="font-size:11px;">⚙ Set API Key</button>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:40px;padding:4px 12px 4px 5px;">
+      <div id="user-avatar" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;"></div>
+      <span id="user-name" style="font-size:13px;font-weight:600;"></span>
+    </div>
+    <button class="btn-sm" style="border-radius:40px;" onclick="doLogout()">Log out</button>
+  </div>
+
+  <!-- API Key Panel -->
+  <div id="key-panel">
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--muted);flex-shrink:0;font-weight:600;width:140px;">🔑 Anthropic Key:</span>
+        <input type="password" class="inp" id="api-key-input" placeholder="sk-ant-api03-..." style="flex:1;min-width:200px;padding:8px 12px;font-size:13px;" oninput="saveApiKey(this.value)"/>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--muted);flex-shrink:0;font-weight:600;width:140px;">✨ Gemini Key:</span>
+        <input type="password" class="inp" id="gemini-key-input" placeholder="AIzaSy..." style="flex:1;min-width:200px;padding:8px 12px;font-size:13px;" oninput="saveGeminiKey(this.value)"/>
+      </div>
+    </div>
+    <button class="btn-sm" onclick="toggleKeyPanel()" style="height:fit-content;padding:12px 20px;">✓ Done</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('translate',this)">🔁 Translate</button>
+    <button class="tab-btn" onclick="switchTab('camera',this)">📷 Camera</button>
+    <button class="tab-btn" onclick="switchTab('fingerspell',this)">🤙 Fingerspell</button>
+    <button class="tab-btn" onclick="switchTab('signs',this)">🤝 Signs</button>
+    <button class="tab-btn" onclick="switchTab('history',this)">📋 History</button>
+  </div>
+
+  <!-- Body -->
+  <div class="body" id="tab-body">
+
+    <!-- ── TRANSLATE TAB ── -->
+    <div id="tab-translate">
+      <!-- Text → Sign -->
+      <div class="card">
+        <div class="card-title">✍️ Text → Sign Language <span class="badge badge-blue">INSTANT</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Output language:</span>
+          <select class="sel" id="t2s-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
+        </div>
+        <textarea class="inp" id="t2s-input" rows="4" placeholder="Type a message… e.g. Hello, thank you, I love you, please help me" onkeydown="if(event.ctrlKey&&event.key==='Enter')translateText()"></textarea>
+        <div class="btn-row">
+          <button class="btn-p" id="t2s-btn" onclick="translateText()">▶ Translate to Signs</button>
+          <button class="btn-s" onclick="clearT2s()">Clear</button>
+        </div>
+        <div id="t2s-result" style="margin-top:20px;"></div>
+      </div>
+
+      <!-- Audio/Voice → Sign -->
+      <div class="card">
+        <div class="card-title">🎤 Voice / Audio → Sign Language <span class="badge badge-green">LIVE SPEECH</span></div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.75;">
+          Click <strong style="color:var(--text);">🎙 Start Speaking</strong> and talk — your words appear automatically in the box below. Then click <strong style="color:var(--text);">Translate to Signs</strong>.
+        </p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Output language:</span>
+          <select class="sel" id="audio-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
+        </div>
+        <div class="btn-row" style="margin-top:0;margin-bottom:14px;">
+          <button class="btn-red" id="audio-mic-btn" onclick="toggleListening()">🎙 Start Speaking</button>
+          <span id="audio-listen-badge" style="display:none;font-size:12px;color:#34d399;animation:pulse 1s ease infinite;">● Listening…</span>
+          <button class="btn-sm" onclick="clearAudio()" id="audio-clear-btn" style="display:none;">✕ Clear</button>
+        </div>
+        <div id="audio-mic-warn" class="alert alert-warn" style="display:none;margin-bottom:12px;">
+          Speech recognition not supported or mic blocked. Type what was spoken below instead.
+        </div>
+        <label class="lbl">Transcript (editable):</label>
+        <textarea class="inp" id="audio-text" rows="3" placeholder="Your spoken words appear here automatically… or type manually"></textarea>
+        <div class="btn-row">
+          <button class="btn-p" id="audio-btn" onclick="translateAudio()">🤙 Translate to Signs</button>
+        </div>
+        <div id="audio-result" style="margin-top:20px;"></div>
+      </div>
+
+      <!-- Sign → Text -->
+      <div class="card">
+        <div class="card-title">🎥 Sign Language → Text <span class="badge badge-blue">AI VISION</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="font-size:13px;color:var(--muted);flex-shrink:0;">Translate to:</span>
+          <select class="sel" id="v2t-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
+        </div>
+        <div id="v2t-apikey-warn" class="alert alert-warn" style="display:none;">⚠️ Add your API key (⚙ button above) to enable AI image analysis.</div>
+        <label class="upload-zone" id="v2t-upload-zone">
+          <input type="file" accept="image/*,video/*" onchange="handleUpload(event)"/>
+          <div id="v2t-upload-content">
+            <div style="font-size:40px;margin-bottom:8px;">📤</div>
+            <div style="color:var(--muted);font-size:14px;line-height:1.8;"><strong style="color:var(--text);">Click to upload</strong> a photo or video of someone signing<br><span style="font-size:12px;">JPG, PNG, MP4, MOV supported</span></div>
+          </div>
+        </label>
+        <div id="v2t-file-status" style="display:none;font-size:12px;color:#3fb950;margin-top:6px;"></div>
+        <div class="btn-row">
+          <button class="btn-p" id="v2t-btn" onclick="analyzeUpload()">🔍 Analyze Signs</button>
+          <button class="btn-s" onclick="clearUpload()">Clear</button>
+        </div>
+        <div id="v2t-result" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- ── CAMERA TAB ── -->
+    <div id="tab-camera" style="display:none;">
+      <div class="card">
+        <div class="card-title">📷 Live Camera — Real-Time Sign Analysis</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.8;">
+          Click <strong style="color:var(--text);">Start Camera</strong> → allow access when asked → perform a sign → click <strong style="color:var(--text);">Capture &amp; Analyze</strong>.
+        </p>
+        <div id="cam-apikey-warn" class="alert alert-warn" style="display:none;">⚠️ Set your API key (⚙ top button) to analyze signs.</div>
+        <div id="cam-err-box" class="alert alert-err" style="display:none;"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:var(--muted);">Mode:</span>
+          <select class="sel" id="cam-mode" onchange="updateCamMode()"><option value="photo">📷 Take Photo</option><option value="video">🎥 Record Video</option></select>
+          <span style="font-size:13px;color:var(--muted);margin-left:8px;">Translate to:</span>
+          <select class="sel" id="cam-lang"><option>English</option><option>Tamil</option><option>Telugu</option><option>Hindi</option><option>Malayalam</option><option>Kannada</option><option>Bengali</option><option>Marathi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Japanese</option><option>Korean</option><option>Chinese (Simplified)</option></select>
+        </div>
+        <div class="cam-box" id="cam-box">
+          <video id="cam-video" autoplay muted playsinline style="display:none;"></video>
+          <div id="cam-placeholder" style="text-align:center;padding:40px;">
+            <div style="font-size:54px;margin-bottom:12px;filter:grayscale(1);">📸</div>
+            <div style="color:var(--muted);font-size:14px;">Camera preview appears here after you click Start Camera</div>
+          </div>
+          <div id="cam-live-badge" class="live-badge" style="display:none;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f85149;animation:pulse 1.2s ease infinite;"></div>LIVE
+          </div>
+        </div>
+        <canvas id="cam-canvas" style="display:none;"></canvas>
+        <div class="btn-row" style="margin-top:0;">
+          <button class="btn-p" id="cam-start-btn" onclick="startCam()">📷 Start Camera</button>
+          <button class="btn-p" id="cam-capture-btn" style="display:none;" onclick="captureAndAnalyze()">📸 Capture &amp; Analyze</button>
+          <button class="btn-s" id="cam-stop-btn" style="display:none;" onclick="stopCam()">⏹ Stop</button>
+        </div>
+        <div id="cam-captured" style="display:none;margin-top:16px;">
+          <div class="lbl" style="margin-bottom:6px;">CAPTURED FRAME</div>
+          <img id="cam-captured-img" style="width:170px;border-radius:10px;border:1px solid var(--border);"/>
+        </div>
+        <div id="cam-result" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- ── FINGERSPELL TAB ── -->
+    <div id="tab-fingerspell" style="display:none;">
+      <div class="card">
+        <div class="card-title">🤙 ASL Fingerspelling — Real Hand Photos</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:18px;">Type any word to see each letter with a real ASL hand photo, step by step.</p>
+        <input class="inp" id="fs-word" placeholder="Type a word… e.g. HELLO or your name" oninput="updateFingerspell(this.value)"/>
+        <div id="fs-controls" style="display:none;margin-top:12px;">
+          <div class="btn-row" style="margin-top:0;margin-bottom:14px;align-items:center;">
+            <button class="btn-sm" id="fs-play-btn" onclick="toggleFsPlay()">▶ Auto-play</button>
+            <button class="btn-sm" onclick="fsPrev()">← Prev</button>
+            <button class="btn-sm" onclick="fsNext()">Next →</button>
+            <span id="fs-counter" style="font-size:12px;color:var(--muted);"></span>
+          </div>
+          <div id="fs-display" style="background:#0a0f1a;border:1.5px solid #1f3550;border-radius:16px;padding:22px 20px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;animation:glowpulse 3s ease infinite;"></div>
+          <div id="fs-strip" class="fs-strip" style="margin-top:12px;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📖 Full ASL Alphabet — Click any letter</div>
+        <div id="alpha-detail" style="display:none;margin-bottom:16px;background:#0a0f1a;border:1.5px solid #1f3550;border-radius:14px;padding:18px;gap:18px;align-items:center;flex-wrap:wrap;"></div>
+        <div class="letter-grid" id="alpha-grid"></div>
+      </div>
+    </div>
+
+    <!-- ── SIGNS TAB ── -->
+    <div id="tab-signs" style="display:none;">
+      <div class="card">
+        <div class="card-title">🔍 Look Up Any Sign <span class="badge badge-green">SEARCH</span></div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:14px;">Type any word or phrase to get animated sign language instructions.</p>
+        <div style="display:flex;gap:10px;">
+          <input class="inp" id="signs-query" style="flex:1;" placeholder="e.g. love, water, help, family…" onkeydown="if(event.key==='Enter')lookupSigns()"/>
+          <button class="btn-p" onclick="lookupSigns()">🔍 Find Sign</button>
+        </div>
+        <div id="signs-lookup-result" style="margin-top:16px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🤝 Common ASL Signs Library</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Click any sign card for animated demo and step-by-step guide.</p>
+        <div id="sign-detail" style="margin-bottom:16px;"></div>
+        <div class="signs-grid" id="signs-grid"></div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY TAB ── -->
+    <div id="tab-history" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="font-size:18px;font-weight:700;">📋 Translation History</h2>
+        <button class="btn-sm" onclick="clearHistory()">Clear All</button>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+  </div><!-- /body -->
+</div><!-- /app -->
+
+<!-- Toasts -->
+<div id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════
+const ASL_IMG={
+  A:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Sign_language_A.svg/200px-Sign_language_A.svg.png",
+  B:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Sign_language_B.svg/200px-Sign_language_B.svg.png",
+  C:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Sign_language_C.svg/200px-Sign_language_C.svg.png",
+  D:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Sign_language_D.svg/200px-Sign_language_D.svg.png",
+  E:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Sign_language_E.svg/200px-Sign_language_E.svg.png",
+  F:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Sign_language_F.svg/200px-Sign_language_F.svg.png",
+  G:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Sign_language_G.svg/200px-Sign_language_G.svg.png",
+  H:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Sign_language_H.svg/200px-Sign_language_H.svg.png",
+  I:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sign_language_I.svg/200px-Sign_language_I.svg.png",
+  J:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Sign_language_J.svg/200px-Sign_language_J.svg.png",
+  K:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Sign_language_K.svg/200px-Sign_language_K.svg.png",
+  L:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sign_language_L.svg/200px-Sign_language_L.svg.png",
+  M:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Sign_language_M.svg/200px-Sign_language_M.svg.png",
+  N:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Sign_language_N.svg/200px-Sign_language_N.svg.png",
+  O:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Sign_language_O.svg/200px-Sign_language_O.svg.png",
+  P:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Sign_language_P.svg/200px-Sign_language_P.svg.png",
+  Q:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Sign_language_Q.svg/200px-Sign_language_Q.svg.png",
+  R:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Sign_language_R.svg/200px-Sign_language_R.svg.png",
+  S:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Sign_language_S.svg/200px-Sign_language_S.svg.png",
+  T:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Sign_language_T.svg/200px-Sign_language_T.svg.png",
+  U:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Sign_language_U.svg/200px-Sign_language_U.svg.png",
+  V:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Sign_language_V.svg/200px-Sign_language_V.svg.png",
+  W:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Sign_language_W.svg/200px-Sign_language_W.svg.png",
+  X:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Sign_language_X.svg/200px-Sign_language_X.svg.png",
+  Y:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Sign_language_Y.svg/200px-Sign_language_Y.svg.png",
+  Z:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Sign_language_Z.svg/200px-Sign_language_Z.svg.png",
+};
+const HAND_EMOJI={A:"✊",B:"🖐",C:"🤌",D:"☝️",E:"🤚",F:"👌",G:"👉",H:"🤞",I:"🤙",J:"🤙",K:"✌️",L:"🤙",M:"✊",N:"✊",O:"👌",P:"☝️",Q:"👇",R:"🤞",S:"✊",T:"✊",U:"✌️",V:"✌️",W:"🖖",X:"☝️",Y:"🤙",Z:"☝️"};
+const LETTER_DESC={
+  A:"Make a fist. Rest your thumb on the side of your index finger.",
+  B:"Hold hand flat, all fingers straight up together. Fold thumb across palm.",
+  C:"Curve all fingers and thumb into a C shape, palm facing out.",
+  D:"Index finger points up. Other fingers + thumb form a circle.",
+  E:"All four fingers hook downward. Tuck thumb underneath.",
+  F:"Index fingertip touches thumb tip. Other three fingers straight up.",
+  G:"Index finger and thumb point sideways — like a sideways gun.",
+  H:"Index and middle fingers out together, pointing sideways.",
+  I:"Fist with only pinky raised straight up.",
+  J:"Pinky up (like I), then trace a J curve downward in the air.",
+  K:"Index up, middle diagonal, thumb between them.",
+  L:"L-shape: index finger up, thumb pointing out to the side.",
+  M:"Three fingers folded over the tucked-in thumb.",
+  N:"Two fingers folded over the tucked-in thumb.",
+  O:"All fingertips meet thumb to form a round O shape.",
+  P:"Like K but pointing downward.",
+  Q:"Like G but pointing downward.",
+  R:"Cross index finger over middle finger.",
+  S:"Fist with thumb crossing the front of all fingers.",
+  T:"Fist with thumb between index and middle fingers.",
+  U:"Index and middle fingers up straight, side by side.",
+  V:"Index and middle fingers spread apart in a V shape.",
+  W:"Index, middle, and ring fingers up and spread in a W.",
+  X:"Index finger bent into a hook.",
+  Y:"Thumb and pinky extended out, other fingers folded.",
+  Z:"Point index finger and trace Z shape in the air.",
+};
+const SIGN_DICT={
+  HELLO:{emoji:"👋",color:"#3b82f6",anim:"wave",desc:"Raise open hand to temple, swing outward like a salute.",steps:["Raise dominant hand to side of forehead","Fingers together, palm facing outward","Swing hand away — like a relaxed salute"]},
+  HI:{emoji:"🖐",color:"#60a5fa",anim:"wave",desc:"Open hand near shoulder, wave side to side.",steps:["Open hand at shoulder height","Wave side to side twice"]},
+  GOODBYE:{emoji:"✋",color:"#8b5cf6",anim:"wave",desc:"Open hand facing out, fold fingers down and up.",steps:["Hold open hand facing forward","Fold fingers down and lift back","Repeat 2–3 times"]},
+  "THANK YOU":{emoji:"🙏",color:"#10b981",anim:"forward",desc:"Flat fingers to chin, swing forward palm up.",steps:["Touch flat fingers gently to chin","Sweep forward and slightly down","End with palm facing upward"]},
+  THANKS:{emoji:"🙏",color:"#10b981",anim:"forward",desc:"Fingertips to chin, swing forward.",steps:["Touch fingertips to chin","Swing forward, palm ends up"]},
+  PLEASE:{emoji:"✋",color:"#f59e0b",anim:"circle",desc:"Flat hand on chest, rub in circular motion.",steps:["Place flat hand on chest","Rub in smooth clockwise circle","Keep contact with chest throughout"]},
+  SORRY:{emoji:"✊",color:"#ef4444",anim:"circle",desc:"Fist on chest, move in a circle.",steps:["Make a fist","Place on chest","Move in slow gentle circle"]},
+  YES:{emoji:"✊",color:"#10b981",anim:"nod",desc:"Fist nods up and down, like nodding yes.",steps:["Make a fist","Bend wrist to nod fist up and down","Do it twice"]},
+  NO:{emoji:"✌️",color:"#ef4444",anim:"snap",desc:"Index and middle snap down to thumb.",steps:["Extend index and middle fingers","Snap both down to touch thumb quickly"]},
+  LOVE:{emoji:"❤️",color:"#ec4899",anim:"hug",desc:"Cross both arms over chest.",steps:["Cross both forearms over chest","Hands touch opposite shoulders","Hold like hugging yourself"]},
+  "I LOVE YOU":{emoji:"🤟",color:"#ec4899",anim:"hold",desc:"Thumb, index, and pinky extended — ILY handshape.",steps:["Hold dominant hand up","Extend thumb to side","Extend pinky up","Keep index up","Middle and ring fingers down"]},
+  HELP:{emoji:"👍",color:"#f59e0b",anim:"lift",desc:"Thumbs-up on flat palm, lift together.",steps:["Make thumbs-up fist","Rest on flat open palm","Lift both hands upward"]},
+  WATER:{emoji:"💧",color:"#3b82f6",anim:"tap",desc:"W-hand taps chin twice.",steps:["Extend index, middle, ring fingers in W shape","Tap to chin twice","Keep W shape throughout"]},
+  EAT:{emoji:"🍽️",color:"#f97316",anim:"tap",desc:"Pinched fingers tap lips.",steps:["Pinch all fingertips together","Tap to lips or mouth","Repeat 2–3 times"]},
+  DRINK:{emoji:"🥤",color:"#06b6d4",anim:"tilt",desc:"C-hand tips up to mouth like drinking.",steps:["Form C with dominant hand","Raise toward mouth","Tilt like drinking from cup"]},
+  HOME:{emoji:"🏠",color:"#84cc16",anim:"sweep",desc:"Pinched fingers: mouth then cheek.",steps:["Bring fingertips together","Touch corner of mouth","Arc to touch cheek"]},
+  GOOD:{emoji:"👍",color:"#10b981",anim:"forward",desc:"Flat hand from chin, swing forward palm up.",steps:["Touch flat fingers to chin","Swing forward and down","End palm facing up"]},
+  BAD:{emoji:"👎",color:"#ef4444",anim:"flip",desc:"Flat hand from lips, flip palm down.",steps:["Touch flat fingers to lips","Swing forward","Flip palm downward"]},
+  NAME:{emoji:"🏷️",color:"#8b5cf6",anim:"tap",desc:"Two H-hands tap together.",steps:["H shapes with both hands","Hold horizontal facing each other","Tap together twice"]},
+  FAMILY:{emoji:"👨‍👩‍👧",color:"#ec4899",anim:"circle",desc:"F-hands move in outward circle.",steps:["F shapes with both hands","Hold facing each other","Move apart in arcs, back together"]},
+  FRIEND:{emoji:"🤝",color:"#10b981",anim:"flip",desc:"Hook index fingers, then flip.",steps:["Hook index over other's index","Flip so other hooks over yours"]},
+  WORK:{emoji:"💼",color:"#8b5cf6",anim:"tap",desc:"Fists face down, dominant taps other.",steps:["Both fists palms down","Tap dominant on top of other","Tap twice firmly"]},
+  SCHOOL:{emoji:"🏫",color:"#3b82f6",anim:"tap",desc:"Flat hand claps open palm twice.",steps:["One hand flat palm up","Clap dominant hand down on it","Repeat twice"]},
+  PAIN:{emoji:"🤕",color:"#ef4444",anim:"tap",desc:"Both index fingers tap at pain location.",steps:["Point both index fingers toward each other","Bring together and tap twice","Near the pain location"]},
+  DOCTOR:{emoji:"🏥",color:"#06b6d4",anim:"tap",desc:"M-hand taps inner wrist.",steps:["Form M with dominant hand","Tap inside of opposite wrist","Where doctor checks pulse"]},
+  TOILET:{emoji:"🚻",color:"#84cc16",anim:"shake",desc:"T-hand shakes side to side.",steps:["Make T hand (thumb between index and middle)","Shake side to side quickly"]},
+  FOOD:{emoji:"🍱",color:"#f97316",anim:"tap",desc:"Pinched fingers tap mouth.",steps:["Pinch all fingertips","Tap to lips twice","Like bringing food to mouth"]},
+  BROTHER:{emoji:"👦",color:"#3b82f6",anim:"sweep",desc:"L at forehead, bring down to other L.",steps:["L hand at forehead like cap brim","Move down and forward","Land next to non-dominant L hand"]},
+  SISTER:{emoji:"👧",color:"#ec4899",anim:"sweep",desc:"A hand at jaw, bring down.",steps:["A hand near jaw/cheek","Move down and forward","Land next to non-dominant hand"]},
+  MOTHER:{emoji:"👩",color:"#ec4899",anim:"tap",desc:"Open-5 hand taps chin with thumb.",steps:["Spread all five fingers","Tap thumb to chin twice"]},
+  FATHER:{emoji:"👨",color:"#3b82f6",anim:"tap",desc:"Open-5 hand taps forehead with thumb.",steps:["Spread all five fingers","Tap thumb to forehead twice"]},
+  WHAT:{emoji:"❓",color:"#f59e0b",anim:"shake",desc:"Both open palms shake side to side.",steps:["Both hands open, palms up","Shake slightly side to side","Use questioning expression"]},
+  WHERE:{emoji:"📍",color:"#f59e0b",anim:"shake",desc:"Index finger waves side to side.",steps:["Point index finger up","Wave/shake side to side slightly"]},
+  WHY:{emoji:"❓",color:"#8b5cf6",anim:"forward",desc:"Middle finger to forehead, bend as hand moves.",steps:["Touch middle finger to forehead","Move hand forward","Bend middle finger as it moves away"]},
+  HOW:{emoji:"🤔",color:"#8b5cf6",anim:"rotate",desc:"Both bent hands rotate forward.",steps:["Both hands bent, knuckles touching","Rotate forward and upward","End with palms facing up"]},
+  I:{emoji:"👆",color:"#3b82f6",anim:"point",desc:"Point index finger to your chest.",steps:["Point index finger to own chest"]},
+  YOU:{emoji:"👉",color:"#3b82f6",anim:"point",desc:"Point index finger at the other person.",steps:["Point directly at the other person"]},
+  MY:{emoji:"✋",color:"#8b5cf6",anim:"tap",desc:"Flat hand pressed gently to chest.",steps:["Flat hand on chest","Press gently once"]},
+  TIME:{emoji:"⏰",color:"#f59e0b",anim:"tap",desc:"Index taps inner wrist twice.",steps:["Point index finger","Tap inside of opposite wrist twice"]},
+  MONEY:{emoji:"💰",color:"#84cc16",anim:"tap",desc:"Flat hand receives tap from curved hand.",steps:["One hand flat palm up","Tap with curved other hand","Like counting money"]},
+  DAY:{emoji:"☀️",color:"#f59e0b",anim:"sweep",desc:"Index arm arcs like the sun's path.",steps:["One arm across body, index up","Arc dominant index side to side","Like the sun's path across sky"]},
+};
+const LANGS=["English","Tamil","Telugu","Hindi","Malayalam","Kannada","Bengali","Marathi","French","Spanish","German","Arabic","Japanese","Korean","Chinese (Simplified)"];
+
+// ═══════════════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════════════
+const DB={
+  getUsers(){try{return JSON.parse(localStorage.getItem("sv_users")||"{}");}catch{return{};}},
+  setUsers(u){localStorage.setItem("sv_users",JSON.stringify(u));},
+  getHist(e){try{return JSON.parse(localStorage.getItem("sv_hist_"+e)||"[]");}catch{return[];}},
+  setHist(e,h){localStorage.setItem("sv_hist_"+e,JSON.stringify(h));},
+  getSession(){return localStorage.getItem("sv_session")||"";},
+  setSession(e){localStorage.setItem("sv_session",e);},
+  clearSession(){localStorage.removeItem("sv_session");},
+  getKey(){return localStorage.getItem("sv_apikey")||"";},
+  setKey(k){localStorage.setItem("sv_apikey",k);},
+  getGeminiKey(){return localStorage.getItem("sv_geminikey")||"";},
+  setGeminiKey(k){localStorage.setItem("sv_geminikey",k);}
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let currentUser=null;
+let currentTab="translate";
+
+// Sign player state
+let signPlayers={};  // keyed by player id
+
+// Fingerspell state
+let fsLetters=[], fsIdx=0, fsPlayTimer=null, fsPlaying=false;
+
+// Camera state
+let camStream=null, camOn=false;
+
+// Voice state
+let recognition=null, listening=false;
+
+// Upload state
+let uploadB64=null, uploadType="";
+
+// ═══════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════
+window.onload=()=>{
+  const key=DB.getKey();
+  if(key){
+    document.getElementById("api-key-input").value=key;
+  }
+  const gKey=DB.getGeminiKey();
+  if(gKey){
+    document.getElementById("gemini-key-input").value=gKey;
+  }
+  updateKeyBtn(!!key || !!gKey);
+  buildAlphabetGrid();
+  buildSignsGrid();
+
+  const email=DB.getSession();
+  if(email){
+    const u=DB.getUsers()[email];
+    if(u){loginUser(u,false);}
+    else{DB.clearSession();showLanding();}
+  } else {
+    showLanding();
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+function showLanding(){
+  document.getElementById("landing").style.display="flex";
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="none";
+}
+function showAuth(mode){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("auth").style.display="flex";
+  document.getElementById("app").style.display="none";
+  switchAuthMode(mode);
+}
+function showApp(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="block";
+  checkApiKeyWarnings();
+}
+function switchAuthMode(mode){
+  document.getElementById("auth-login").style.display=mode==="login"?"block":"none";
+  document.getElementById("auth-signup").style.display=mode==="signup"?"block":"none";
+  document.getElementById("l-err").style.display="none";
+  document.getElementById("s-err").style.display="none";
+}
+
+function switchTab(tabId, btn){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  ["translate","camera","fingerspell","signs","history"].forEach(id=>{
+    document.getElementById("tab-"+id).style.display=id===tabId?"block":"none";
+  });
+  currentTab=tabId;
+  // Scroll body to top
+  document.getElementById("tab-body").scrollTop=0;
+  window.scrollTo(0,0);
+  if(tabId==="history")renderHistory();
+  if(tabId!=="camera")stopCam();
+  checkApiKeyWarnings();
+}
+
+function checkApiKeyWarnings(){
+  const hasKey=!!DB.getKey() || !!DB.getGeminiKey();
+  ["v2t-apikey-warn","cam-apikey-warn"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=hasKey?"none":"block";
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════
+function doSignup(){
+  const name=document.getElementById("s-name").value.trim();
+  const email=document.getElementById("s-email").value.trim().toLowerCase();
+  const pass=document.getElementById("s-pass").value;
+  const lang=document.getElementById("s-lang").value;
+  const errEl=document.getElementById("s-err");
+  const showErr=msg=>{errEl.textContent=msg;errEl.style.display="block";};
+  if(!name||!email||!pass){showErr("Please fill all fields.");return;}
+  if(pass.length<6){showErr("Password must be at least 6 characters.");return;}
+  if(!email.includes("@")){showErr("Enter a valid email address.");return;}
+  const users=DB.getUsers();
+  if(users[email]){showErr("Email already registered — please log in.");return;}
+  const u={name,email,pass,lang};
+  users[email]=u; DB.setUsers(users);
+  toast("Account created! Welcome, "+name.split(" ")[0]+" 🎉","success");
+  loginUser(u,true);
+}
+
+function doLogin(){
+  const email=document.getElementById("l-email").value.trim().toLowerCase();
+  const pass=document.getElementById("l-pass").value;
+  const errEl=document.getElementById("l-err");
+  const showErr=msg=>{errEl.textContent=msg;errEl.style.display="block";};
+  errEl.style.display="none";
+  if(!email||!pass){showErr("Please enter your email and password.");return;}
+  const users=DB.getUsers();
+  const u=users[email];
+  if(!u){showErr("No account found with this email. Please sign up.");return;}
+  if(u.pass!==pass){showErr("Wrong password. Please try again.");return;}
+  toast("Welcome back, "+u.name.split(" ")[0]+" 👋","success");
+  loginUser(u,true);
+}
+
+function loginUser(u,navigate){
+  currentUser=u;
+  DB.setSession(u.email);
+  document.getElementById("user-avatar").textContent=u.name[0].toUpperCase();
+  document.getElementById("user-name").textContent=u.name.split(" ")[0];
+  // Pre-select preferred language in all selects
+  ["t2s-lang","audio-lang","v2t-lang","cam-lang"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){for(let i=0;i<el.options.length;i++){if(el.options[i].value===u.lang||el.options[i].text===u.lang){el.selectedIndex=i;break;}}}
+  });
+  if(navigate)showApp();
+  else showApp();
+}
+
+function doLogout(){
+  stopCam();
+  stopListening();
+  DB.clearSession();
+  currentUser=null;
+  showLanding();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// API KEY
+// ═══════════════════════════════════════════════════════════════════
+function toggleKeyPanel(){
+  const p=document.getElementById("key-panel");
+  p.classList.toggle("open");
+}
+function saveApiKey(val){
+  DB.setKey(val);
+  updateKeyBtn(!!val || !!DB.getGeminiKey());
+  checkApiKeyWarnings();
+}
+function saveGeminiKey(val){
+  DB.setGeminiKey(val);
+  updateKeyBtn(!!val || !!DB.getKey());
+  checkApiKeyWarnings();
+}
+function updateKeyBtn(hasKey){
+  const btn=document.getElementById("key-toggle-btn");
+  if(!btn)return;
+  btn.textContent=hasKey?"✓ API Key Set":"⚙ Set API Key";
+  btn.style.borderColor=hasKey?"#238636":"rgba(255,255,255,0.1)";
+  btn.style.color=hasKey?"#3fb950":"#8b949e";
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AI API CALL
+// ═══════════════════════════════════════════════════════════════════
+async function callAI(prompt,system="",imageB64=null){
+  const gKey=DB.getGeminiKey();
+  const cKey=DB.getKey();
+  if(!gKey && !cKey) throw new Error("NO_KEY");
+
+  if(gKey){
+    const body={contents:[{role:"user",parts:[]}]};
+    if(system) body.systemInstruction={parts:[{text:system}]};
+    if(imageB64) body.contents[0].parts.push({inlineData:{mimeType:"image/jpeg",data:imageB64}});
+    body.contents[0].parts.push({text:prompt});
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="+gKey,{
+      method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error?.message||"Gemini Error");
+    return data.candidates[0].content.parts[0].text;
+  } else {
+    const content=imageB64?[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:imageB64}},{type:"text",text:prompt}]:prompt;
+    const body={model:"claude-3-5-sonnet-20241022",max_tokens:800,messages:[{role:"user",content}]};
+    if(system) body.system=system;
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":cKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(!res.ok){
+      if(data?.error?.type?.includes("rate")||data?.type?.includes("limit"))throw new Error("RATE_LIMIT");
+      throw new Error(data?.error?.message||"API error "+res.status);
+    }
+    return data.content.map(c=>c.text||"").join("");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIGN PARSING
+// ═══════════════════════════════════════════════════════════════════
+function parseToSigns(text){
+  const upper=text.toUpperCase().trim();
+  const result=[];
+  const skipWords=new Set();
+  for(const phrase of["I LOVE YOU","THANK YOU"]){
+    if(upper.includes(phrase)){
+      result.push({word:phrase,...SIGN_DICT[phrase]});
+      phrase.split(" ").forEach(w=>skipWords.add(w));
+    }
+  }
+  const words=upper.replace(/[^A-Z\s']/g,"").split(/\s+/).filter(Boolean);
+  for(const w of words){
+    if(skipWords.has(w))continue;
+    if(SIGN_DICT[w]){result.push({word:w,...SIGN_DICT[w]});}
+    else{
+      const letters=w.split("").filter(l=>ASL_IMG[l]);
+      if(letters.length)result.push({word:w,emoji:"🤙",color:"#64748b",anim:"hold",desc:"Fingerspell: "+w,fingerspell:letters,steps:letters.map(l=>l+": "+LETTER_DESC[l])});
+    }
+  }
+  return result.length?result:[{word:text,emoji:"🤙",color:"#64748b",anim:"hold",desc:"Fingerspell",fingerspell:text.toUpperCase().split("").filter(l=>ASL_IMG[l]),steps:[]}];
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIGN PLAYER RENDERER
+// ═══════════════════════════════════════════════════════════════════
+function renderSignPlayer(containerId, signs, trans, lang){
+  const container=document.getElementById(containerId);
+  if(!container||!signs.length){if(container)container.innerHTML="";return;}
+
+  // Player state per container
+  const state=signPlayers[containerId]={signs,idx:0,fsIdx:0,playing:false,timer:null,fsTimer:null,render:null,startAutoPlay:null};
+
+  function render(){
+    const s=state.signs;
+    const idx=state.idx;
+    const cur=s[idx];
+    const color=cur.color||"#2563eb";
+
+    // Chips
+    let chipsHtml=s.map((w,i)=>`
+      <div class="chip ${i===idx?"active":""}" onclick="playerSetIdx('${containerId}',${i})" style="${i===idx?"border-color:"+w.color+";":""}">
+        <span class="chip-emoji" style="animation:${i===idx?w.anim+" 1.6s ease-in-out infinite":"none"};display:inline-block;">${w.emoji}</span>
+        <span class="chip-label" style="${i===idx?"color:"+w.color+"":""}">${w.word}</span>
+      </div>`).join("");
+
+    // Visual area
+    let visualHtml="";
+    if(cur.fingerspell&&cur.fingerspell.length){
+      const fsLetters=cur.fingerspell;
+      const fi=state.fsIdx%fsLetters.length;
+      const letter=fsLetters[fi];
+      const imgSrc=ASL_IMG[letter];
+      visualHtml=`
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;letter-spacing:1px;">FINGERSPELLING — ${cur.word}</div>
+          <div style="background:#0d1117;border:1.5px solid #1e3a5f;border-radius:12px;padding:12px;margin-bottom:10px;text-align:center;">
+            <img src="${imgSrc}" class="hand-img" style="width:120px;height:120px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="${letter}"/>
+            <div class="hand-fallback" style="display:none;width:120px;height:120px;">${HAND_EMOJI[letter]||"✋"}</div>
+            <div style="font-size:34px;font-weight:800;color:#58a6ff;margin-top:6px;font-family:monospace;">${letter}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">${fi+1}/${fsLetters.length}</div>
+          </div>
+          <div class="fs-strip">${fsLetters.map((l,li)=>`
+            <div class="fs-chip ${li===fi?"active":""}" onclick="playerSetFsIdx('${containerId}',${li})">
+              <img src="${ASL_IMG[l]}" style="width:34px;height:34px;object-fit:contain;" onerror="this.outerHTML='<div style=font-size:18px>${HAND_EMOJI[l]}</div>'" alt="${l}"/>
+              <div style="font-size:10px;font-weight:700;color:${li===fi?"#58a6ff":"#484f58"};margin-top:1px;">${l}</div>
+            </div>`).join("")}
+          </div>
+        </div>`;
+    } else {
+      visualHtml=`
+        <div style="text-align:center;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;letter-spacing:1px;">ANIMATED SIGN</div>
+          <div class="sign-anim-box" style="background:${color}0d;border:2px solid ${color}33;margin:0 auto;">
+            <span class="sign-emoji-big" style="animation:${cur.anim} 1.5s ease-in-out infinite;filter:drop-shadow(0 0 22px ${color}99);">${cur.emoji}</span>
+          </div>
+          <div style="margin-top:9px;display:inline-block;padding:3px 11px;background:${color}22;color:${color};border-radius:20px;font-size:11px;font-weight:700;">${(cur.anim||"").toUpperCase()}</div>
+        </div>`;
+    }
+
+    // Steps
+    let stepsHtml=`<div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;letter-spacing:1px;">HOW TO SIGN "${cur.word}"</div>
+      <div style="font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7;background:${color}0d;padding:9px 13px;border-radius:9px;border-left:3px solid ${color};">${cur.desc}</div>`;
+    (cur.steps||[]).forEach((step,i)=>{
+      stepsHtml+=`<div class="step-row">
+        <div class="step-num" style="background:${color}22;border:1.5px solid ${color}55;color:${color};">${i+1}</div>
+        <div style="font-size:13px;color:#c9d1d9;line-height:1.75;padding-top:3px;">${step}</div>
+      </div>`;
+    });
+
+    // Subtitle
+    let subtitleHtml="";
+    if(trans){
+      subtitleHtml=`<div class="subtitle-box">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:700;letter-spacing:1px;">✅ SUBTITLE — TWO-STEP VERIFICATION</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);">${lang}: ${trans.translated}</div>
+        ${lang!=="English"?`<div style="font-size:13px;color:var(--muted);margin-top:4px;">English: ${trans.english}</div>`:""}
+      </div>`;
+    }
+
+    container.innerHTML=`
+      <div class="sign-chips">${chipsHtml}</div>
+      <div class="sign-box">
+        <div class="sign-header">
+          <div style="width:42px;height:42px;border-radius:50%;background:${color}22;border:2px solid ${color}55;display:flex;align-items:center;justify-content:center;font-size:22px;animation:${cur.anim} 1.6s ease-in-out infinite;flex-shrink:0;">${cur.emoji}</div>
+          <div>
+            <div style="font-weight:800;font-size:18px;color:${color};font-family:'Space Grotesk',system-ui;">${cur.word}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:1px;">${idx+1} of ${s.length}</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-sm" onclick="playerPrev('${containerId}')">← Prev</button>
+            <button class="btn-sm" onclick="playerNext('${containerId}')">Next →</button>
+            <button class="btn-sm" id="${containerId}-play-btn" onclick="playerTogglePlay('${containerId}')"
+              style="${state.playing?"background:#161b22;color:var(--muted);":"background:#0d2040;color:#58a6ff;border-color:var(--accent);"}">
+              ${state.playing?"⏸ Pause":"▶ Play All"}
+            </button>
+          </div>
+        </div>
+        <div class="sign-body">
+          ${visualHtml}
+          <div style="flex:1;min-width:180px;">${stepsHtml}</div>
+        </div>
+      </div>
+      ${subtitleHtml}`;
+  }
+
+  function startAutoPlay(){
+    state.playing=true;
+    if(state.idx>=state.signs.length-1){state.idx=0; state.fsIdx=0;}
+    render();
+    function tick(){
+      if(!state.playing)return;
+      state.idx++;
+      if(state.idx>=state.signs.length){state.idx=0;state.playing=false;render();return;}
+      state.fsIdx=0;
+      render();
+      state.timer=setTimeout(tick,2400);
+    }
+    state.timer=setTimeout(tick,2400);
+  }
+
+  state.render = render;
+  state.startAutoPlay = startAutoPlay;
+  render();
+  setTimeout(startAutoPlay,200);
+}
+
+function playerSetIdx(id,idx){
+  const s=signPlayers[id]; if(!s)return;
+  clearTimeout(s.timer); s.playing=false;
+  s.idx=idx; s.fsIdx=0;
+  s.render();
+}
+function playerSetFsIdx(id,fi){
+  const s=signPlayers[id]; if(!s)return;
+  s.fsIdx=fi; s.render();
+}
+function playerPrev(id){const s=signPlayers[id];if(!s)return;clearTimeout(s.timer);s.playing=false;s.idx=Math.max(0,s.idx-1);s.fsIdx=0;s.render();}
+function playerNext(id){const s=signPlayers[id];if(!s)return;clearTimeout(s.timer);s.playing=false;s.idx=Math.min(s.signs.length-1,s.idx+1);s.fsIdx=0;s.render();}
+function playerTogglePlay(id){
+  const s=signPlayers[id];if(!s)return;
+  if(s.playing){clearTimeout(s.timer);s.playing=false;s.render();}
+  else{ s.startAutoPlay(); }
+}
+
+function renderSignPlayerFull(containerId,signs,trans,lang){
+  renderSignPlayer(containerId,signs,trans,lang);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TEXT → SIGN
+// ═══════════════════════════════════════════════════════════════════
+async function translateText(){
+  const text=document.getElementById("t2s-input").value.trim();
+  if(!text){toast("Type something first!","error");return;}
+  const lang=document.getElementById("t2s-lang").value;
+  const btn=document.getElementById("t2s-btn");
+  btn.innerHTML='<span class="spin"></span> Translating…'; btn.disabled=true;
+
+  const signs=parseToSigns(text);
+  let trans={translated:text,english:text};
+
+  if(lang!=="English"){
+    try{
+      const raw=await callAI(`Translate to ${lang}. Reply with ONLY the translated text: "${text}"`,"Translator. Reply translated text only.");
+      trans={translated:raw.trim(),english:text};
+    }catch(e){
+      if(e.message==="NO_KEY")toast("Add API key for multilingual output.","warn");
+      else if(e.message==="RATE_LIMIT")toast("API rate limit — showing English. Wait ~5 min.","warn");
+    }
+  }
+
+  addHistory({type:"text→sign",input:text,output:"Sign animation",lang});
+  renderSignPlayerFull("t2s-result",signs,trans,lang);
+  btn.innerHTML='▶ Translate to Signs'; btn.disabled=false;
+  toast("Signs ready! Auto-playing…","success");
+}
+
+function clearT2s(){
+  document.getElementById("t2s-input").value="";
+  document.getElementById("t2s-result").innerHTML="";
+  delete signPlayers["t2s-result"];
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// VOICE → SIGN  (FIX: using Web Speech API, no HTML in strings)
+// ═══════════════════════════════════════════════════════════════════
+function toggleListening(){
+  if(listening)stopListening();
+  else startListening();
+}
+
+function startListening(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById("audio-mic-warn").style.display="block";
+    toast("Speech recognition not supported in this browser. Type manually.","warn");
+    return;
+  }
+  try{
+    recognition=new SR();
+    recognition.continuous=true; recognition.interimResults=true; recognition.lang="en-US";
+    recognition.onresult=e=>{
+      const transcript=Array.from(e.results).map(r=>r[0].transcript).join("");
+      document.getElementById("audio-text").value=transcript;
+    };
+    recognition.onerror=e=>{
+      if(e.error==="not-allowed"){
+        document.getElementById("audio-mic-warn").textContent="Microphone permission denied. Please allow mic in browser settings, then try again.";
+        document.getElementById("audio-mic-warn").style.display="block";
+      }
+      stopListening();
+    };
+    recognition.onend=()=>{if(listening)stopListening();};
+    recognition.start();
+    listening=true;
+    const btn=document.getElementById("audio-mic-btn");
+    btn.textContent="⏹ Stop Listening";
+    btn.style.background="linear-gradient(135deg,#4b5563,#1f2937)";
+    document.getElementById("audio-listen-badge").style.display="inline";
+    document.getElementById("audio-clear-btn").style.display="inline-flex";
+    toast("Listening… Speak now. Click Stop when done.","info");
+  }catch(e){
+    toast("Microphone error: "+e.message,"error");
+  }
+}
+
+function stopListening(){
+  if(recognition){try{recognition.stop();}catch{}}
+  listening=false;
+  const btn=document.getElementById("audio-mic-btn");
+  btn.innerHTML="🎙 Start Speaking";
+  btn.style.background="linear-gradient(135deg,#dc2626,#9f1239)";
+  document.getElementById("audio-listen-badge").style.display="none";
+}
+
+function clearAudio(){
+  document.getElementById("audio-text").value="";
+  document.getElementById("audio-result").innerHTML="";
+  delete signPlayers["audio-result"];
+}
+
+async function translateAudio(){
+  const text=document.getElementById("audio-text").value.trim();
+  if(!text){toast("Speak something or type text first!","error");return;}
+  const lang=document.getElementById("audio-lang").value;
+  const btn=document.getElementById("audio-btn");
+  btn.innerHTML='<span class="spin"></span> Processing…'; btn.disabled=true;
+
+  const signs=parseToSigns(text);
+  let trans={translated:text,english:text};
+  if(lang!=="English"){
+    try{
+      const raw=await callAI(`Translate to ${lang}. Reply ONLY translated text: "${text}"`,"Translator only.");
+      trans={translated:raw.trim(),english:text};
+    }catch{}
+  }
+  addHistory({type:"audio→sign",input:text,output:"Sign animation",lang});
+  renderSignPlayerFull("audio-result",signs,trans,lang);
+  btn.innerHTML="🤙 Translate to Signs"; btn.disabled=false;
+  toast("Sign translation ready!","success");
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UPLOAD → TEXT  (FIX: reads file directly as base64)
+// ═══════════════════════════════════════════════════════════════════
+function handleUpload(event){
+  const file=event.target.files[0]; if(!file)return;
+  uploadB64=null; uploadType="";
+  const isImg=file.type.startsWith("image/");
+  const isVid=file.type.startsWith("video/");
+  if(!isImg&&!isVid){toast("Please upload an image or video file.","error");return;}
+  uploadType=isImg?"image":"video";
+  const url=URL.createObjectURL(file);
+
+  // Show preview
+  const zone=document.getElementById("v2t-upload-zone");
+  const content=document.getElementById("v2t-upload-content");
+  if(isImg){
+    content.innerHTML=`<img src="${url}" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--border);"/>`;
+  } else {
+    content.innerHTML=`<video src="${url}" controls style="max-width:100%;max-height:220px;border-radius:10px;" muted playsinline></video>`;
+  }
+
+  const status=document.getElementById("v2t-file-status");
+  if(isImg){
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      uploadB64=ev.target.result.split(",")[1];
+      status.textContent="✓ Image loaded — ready to analyze";
+      status.style.display="block";
+      toast("Image loaded — click Analyze.","success");
+    };
+    reader.onerror=()=>toast("Failed to read file.","error");
+    reader.readAsDataURL(file);
+  } else {
+    uploadB64="PENDING_VIDEO";
+    status.textContent="✓ Video loaded — ready to analyze";
+    status.style.display="block";
+    toast("Video loaded — click Analyze.","success");
+  }
+}
+
+function clearUpload(){
+  uploadB64=null; uploadType="";
+  document.getElementById("v2t-upload-content").innerHTML=`
+    <div style="font-size:40px;margin-bottom:8px;">📤</div>
+    <div style="color:var(--muted);font-size:14px;line-height:1.8;"><strong style="color:var(--text);">Click to upload</strong> a photo or video of someone signing<br><span style="font-size:12px;">JPG, PNG, MP4, MOV supported</span></div>`;
+  document.getElementById("v2t-file-status").style.display="none";
+  document.getElementById("v2t-result").innerHTML="";
+}
+
+async function analyzeUpload(){
+  if(!uploadB64){toast("Upload an image or video first.","error");return;}
+  if(!DB.getKey() && !DB.getGeminiKey()){toast("Add your Anthropic or Gemini API key (⚙ button) to analyze signs.","warn");return;}
+  const lang=document.getElementById("v2t-lang").value;
+  const btn=document.getElementById("v2t-btn");
+  btn.innerHTML='<span class="spin"></span> Analyzing…'; btn.disabled=true;
+  
+  try{
+    let b64ToAnalyze = uploadB64;
+    if(uploadType === "video") {
+      const vid = document.querySelector("#v2t-upload-content video");
+      if(vid) {
+        const canvas = document.createElement("canvas");
+        canvas.width = vid.videoWidth || 640;
+        canvas.height = vid.videoHeight || 480;
+        canvas.getContext("2d").drawImage(vid, 0, 0, canvas.width, canvas.height);
+        b64ToAnalyze = canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
+      }
+    }
+
+    const raw=await callAI(
+      `You are an ASL sign language expert. Analyze the hand gesture(s) in this ${uploadType}.\nLook at: finger positions, hand shapes, palm orientation.\nTarget language: ${lang}\nReturn ONLY this JSON (no markdown):\n{"english":"what sign is shown","translated":"in ${lang}","signs":["sign1"],"confidence":"high/medium/low","note":"helpful tip"}`,
+      "ASL expert. Return raw JSON only, no markdown.",b64ToAnalyze
+    );
+    const parsed=JSON.parse(raw.replace(/```json?/g,"").replace(/```/g,"").trim());
+    const confColor=parsed.confidence==="high"?"#3fb950":parsed.confidence==="medium"?"#d29922":"#f85149";
+    const resultEl=document.getElementById("v2t-result");
+    resultEl.innerHTML=`
+      <div style="background:var(--surf2);border:1.5px solid ${parsed.confidence==="high"?"#238636":parsed.confidence==="medium"?"#9e6a03":"var(--border)"};border-radius:12px;padding:18px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${(parsed.signs||[]).map(s=>`<span style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:2px 9px;font-size:12px;">${s}</span>`).join("")}
+          <span style="margin-left:auto;font-size:12px;color:${confColor};">● ${parsed.confidence} confidence</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">${parsed.translated}</div>
+        ${lang!=="English"?`<div style="font-size:13px;color:var(--muted);padding-top:8px;border-top:1px solid var(--border);">✅ English: ${parsed.english}</div>`:""}
+        ${parsed.note?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">ℹ️ ${parsed.note}</div>`:""}
+      </div>`;
+    addHistory({type:"sign→text",input:"["+uploadType+"]",output:parsed.translated,lang});
+    toast("Analysis complete!","success");
+  }catch(e){
+    if(e.message==="NO_KEY")toast("Add API key to analyze images.","warn");
+    else if(e.message==="RATE_LIMIT")toast("API rate limit — wait ~5 min and try again.","warn");
+    else toast("Analysis failed: "+e.message,"error");
+  }
+  btn.innerHTML="🔍 Analyze Signs"; btn.disabled=false;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CAMERA
+// ═══════════════════════════════════════════════════════════════════
+let mediaRecorder=null; let recording=false; let recordedChunks=[];
+
+function updateCamMode() {
+  const mode = document.getElementById("cam-mode").value;
+  const capBtn = document.getElementById("cam-capture-btn");
+  if(!camOn) return;
+  capBtn.disabled = false;
+  if(mode === "photo") {
+    capBtn.innerHTML = "📸 Capture & Analyze";
+    capBtn.className = "btn-p";
+    capBtn.onclick = captureAndAnalyze;
+    if(recording) toggleRecording();
+  } else {
+    capBtn.innerHTML = "🔴 Start Recording";
+    capBtn.className = "btn-red";
+    capBtn.onclick = toggleRecording;
+  }
+}
+
+function toggleRecording(){
+  if(!camOn){toast("Camera not active.","error");return;}
+  if(!recording){
+    recordedChunks=[];
+    try {
+      mediaRecorder=new MediaRecorder(camStream);
+      mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data);};
+      mediaRecorder.onstop=async ()=>{
+        const blob=new Blob(recordedChunks,{type:"video/webm"});
+        const url=URL.createObjectURL(blob);
+        const tempVid=document.createElement("video");
+        tempVid.src=url; tempVid.muted=true; tempVid.playsInline=true;
+        tempVid.onloadeddata=()=>{ tempVid.currentTime = tempVid.duration > 0.5 ? tempVid.duration - 0.2 : 0; };
+        tempVid.onseeked=async ()=>{
+          const canvas=document.getElementById("cam-canvas");
+          canvas.width=tempVid.videoWidth||640; canvas.height=tempVid.videoHeight||480;
+          canvas.getContext("2d").drawImage(tempVid,0,0);
+          const b64=canvas.toDataURL("image/jpeg",0.88).split(",")[1];
+          document.getElementById("cam-captured-img").src=canvas.toDataURL("image/jpeg",0.88);
+          document.getElementById("cam-captured").style.display="block";
+          await performCamAnalysis(b64);
+        };
+      };
+      mediaRecorder.start();
+      recording=true;
+      const btn=document.getElementById("cam-capture-btn");
+      btn.innerHTML="⏹ Stop & Analyze";
+      btn.className="btn-p";
+      toast("Recording started! Sign now.","info");
+    } catch(err) {
+      toast("Failed to start recording: " + err.message, "error");
+    }
+  } else {
+    mediaRecorder.stop();
+    recording=false;
+    const btn=document.getElementById("cam-capture-btn");
+    btn.innerHTML='<span class="spin"></span> Analyzing…'; btn.disabled=true;
+  }
+}
+
+async function performCamAnalysis(b64) {
+  const lang=document.getElementById("cam-lang").value;
+  try{
+    const raw=await callAI(
+      `ASL expert: analyze this webcam frame for sign language. Target: ${lang}.\nReturn ONLY raw JSON: {"english":"...","translated":"...","signs":["..."],"confidence":"high/medium/low","note":"..."}`,
+      "Sign language expert. Raw JSON only.",b64
+    );
+    const parsed=JSON.parse(raw.replace(/```json?/g,"").replace(/```/g,"").trim());
+    const confColor=parsed.confidence==="high"?"#3fb950":parsed.confidence==="medium"?"#d29922":"#f85149";
+    document.getElementById("cam-result").innerHTML=`
+      <div style="background:var(--surf2);border:1.5px solid ${parsed.confidence==="high"?"#238636":parsed.confidence==="medium"?"#9e6a03":"var(--border)"};border-radius:12px;padding:18px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${(parsed.signs||[]).map(s=>`<span style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:2px 9px;font-size:12px;">${s}</span>`).join("")}
+          <span style="margin-left:auto;font-size:12px;color:${confColor};">● ${parsed.confidence} confidence</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">${parsed.translated}</div>
+        ${lang!=="English"?`<div style="font-size:13px;color:var(--muted);padding-top:8px;border-top:1px solid var(--border);">✅ English: ${parsed.english}</div>`:""}
+        ${parsed.note?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">ℹ️ ${parsed.note}</div>`:""}
+      </div>`;
+    addHistory({type:"camera→text",input:"[Camera]",output:parsed.translated,lang});
+    toast("Sign analyzed!","success");
+  }catch(e){
+    if(e.message==="NO_KEY")toast("Add API key to analyze.","warn");
+    else if(e.message==="RATE_LIMIT")toast("Rate limit — wait ~5 min.","warn");
+    else toast("Failed: "+e.message,"error");
+  }
+  updateCamMode();
+}
+
+async function startCam(){
+  const errBox=document.getElementById("cam-err-box");
+  errBox.style.display="none";
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:"user"},audio:false});
+    camStream=stream; camOn=true;
+    const vid=document.getElementById("cam-video");
+    vid.srcObject=stream; vid.style.display="block";
+    document.getElementById("cam-placeholder").style.display="none";
+    document.getElementById("cam-live-badge").style.display="flex";
+    document.getElementById("cam-start-btn").style.display="none";
+    document.getElementById("cam-capture-btn").style.display="inline-flex";
+    document.getElementById("cam-stop-btn").style.display="inline-flex";
+    updateCamMode();
+    vid.play().catch(()=>{});
+    toast("Camera on! Show a sign then click Capture.","success");
+  }catch(err){
+    let msg="";
+    if(err.name==="NotAllowedError"||err.name==="PermissionDeniedError"){
+      msg="Camera blocked. Fix: click the 🔒 icon in your address bar → Camera → Allow → refresh page.";
+    } else if(err.name==="NotFoundError"){
+      msg="No camera found on this device.";
+    } else if(err.name==="NotReadableError"){
+      msg="Camera is busy — close other apps like Zoom or Teams first.";
+    } else {
+      msg="Camera error: "+err.message;
+    }
+    errBox.innerHTML=`⚠️ <strong>${msg}</strong>`;
+    errBox.style.display="block";
+    toast(msg,"error");
+  }
+}
+
+function stopCam(){
+  if(recording) { mediaRecorder.stop(); recording=false; }
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  const vid=document.getElementById("cam-video");
+  if(vid){vid.srcObject=null;vid.style.display="none";}
+  camOn=false;
+  const pl=document.getElementById("cam-placeholder"); if(pl)pl.style.display="block";
+  const lb=document.getElementById("cam-live-badge"); if(lb)lb.style.display="none";
+  const sb=document.getElementById("cam-start-btn"); if(sb)sb.style.display="inline-flex";
+  const cb=document.getElementById("cam-capture-btn"); if(cb)cb.style.display="none";
+  const stb=document.getElementById("cam-stop-btn"); if(stb)stb.style.display="none";
+}
+
+async function captureAndAnalyze(){
+  if(!camOn){toast("Camera not active.","error");return;}
+  if(!DB.getKey() && !DB.getGeminiKey()){toast("Add an API key (⚙) to analyze signs.","warn");return;}
+  const vid=document.getElementById("cam-video");
+  const canvas=document.getElementById("cam-canvas");
+  canvas.width=vid.videoWidth||640; canvas.height=vid.videoHeight||480;
+  canvas.getContext("2d").drawImage(vid,0,0);
+  const imgUrl=canvas.toDataURL("image/jpeg",0.88);
+  const b64=imgUrl.split(",")[1];
+  const capturedDiv=document.getElementById("cam-captured");
+  document.getElementById("cam-captured-img").src=imgUrl;
+  capturedDiv.style.display="block";
+
+  const lang=document.getElementById("cam-lang").value;
+  const btn=document.getElementById("cam-capture-btn");
+  btn.innerHTML='<span class="spin"></span> Analyzing…'; btn.disabled=true;
+  try{
+    const raw=await callAI(
+      `ASL expert: analyze this webcam frame for sign language. Target: ${lang}.\nReturn ONLY raw JSON: {"english":"...","translated":"...","signs":["..."],"confidence":"high/medium/low","note":"..."}`,
+      "Sign language expert. Raw JSON only.",b64
+    );
+    const parsed=JSON.parse(raw.replace(/```json?/g,"").replace(/```/g,"").trim());
+    const confColor=parsed.confidence==="high"?"#3fb950":parsed.confidence==="medium"?"#d29922":"#f85149";
+    document.getElementById("cam-result").innerHTML=`
+      <div style="background:var(--surf2);border:1.5px solid ${parsed.confidence==="high"?"#238636":"var(--border)"};border-radius:12px;padding:18px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${(parsed.signs||[]).map(s=>`<span style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:2px 9px;font-size:12px;">${s}</span>`).join("")}
+          <span style="margin-left:auto;font-size:12px;color:${confColor};">● ${parsed.confidence}</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">${parsed.translated}</div>
+        ${lang!=="English"?`<div style="font-size:13px;color:var(--muted);padding-top:8px;border-top:1px solid var(--border);">✅ English: ${parsed.english}</div>`:""}
+        ${parsed.note?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">ℹ️ ${parsed.note}</div>`:""}
+      </div>`;
+    addHistory({type:"camera→text",input:"[Camera]",output:parsed.translated,lang});
+    toast("Sign analyzed!","success");
+  }catch(e){
+    if(e.message==="NO_KEY")toast("Add API key to analyze.","warn");
+    else if(e.message==="RATE_LIMIT")toast("Rate limit — wait ~5 min.","warn");
+    else toast("Failed: "+e.message,"error");
+  }
+  btn.innerHTML="📸 Capture &amp; Analyze"; btn.disabled=false;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FINGERSPELL TAB
+// ═══════════════════════════════════════════════════════════════════
+function updateFingerspell(word){
+  fsLetters=word.toUpperCase().replace(/[^A-Z ]/g,"").split("").filter(c=>c===" "||ASL_IMG[c]);
+  fsIdx=0; fsPlaying=false;
+  clearTimeout(fsPlayTimer);
+  document.getElementById("fs-play-btn").textContent="▶ Auto-play";
+  if(!fsLetters.length){document.getElementById("fs-controls").style.display="none";return;}
+  document.getElementById("fs-controls").style.display="block";
+  renderFsFrame();
+  renderFsStrip();
+}
+
+function renderFsFrame(){
+  document.getElementById("fs-counter").textContent=(fsIdx+1)+" / "+fsLetters.length;
+  const letter=fsLetters[fsIdx];
+  const display=document.getElementById("fs-display");
+  if(letter===" "){
+    display.innerHTML=`<div style="font-size:18px;color:var(--muted);padding:30px 50px;">[ SPACE ]</div>`;
+    return;
+  }
+  const imgSrc=ASL_IMG[letter];
+  display.innerHTML=`
+    <div style="text-align:center;flex:0 0 auto;">
+      <div style="background:#0d1117;border:1.5px solid #1e3a5f;border-radius:14px;padding:12px;display:inline-block;">
+        <img src="${imgSrc}" class="hand-img" style="width:160px;height:160px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="${letter}"/>
+        <div class="hand-fallback" style="display:none;width:160px;height:160px;font-size:88px;">${HAND_EMOJI[letter]||"✋"}</div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div style="font-family:'Space Grotesk',system-ui;font-weight:800;font-size:64px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:12px;">${letter}</div>
+      <div style="background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+        <div style="font-size:11px;color:#58a6ff;font-weight:700;letter-spacing:1px;margin-bottom:5px;">HOW TO FORM THIS LETTER</div>
+        <div style="font-size:14px;color:#c9d1d9;line-height:1.8;">${LETTER_DESC[letter]||""}</div>
+      </div>
+      <div style="padding:7px 13px;background:rgba(37,99,235,.1);border-radius:8px;font-size:12px;color:#58a6ff;display:inline-block;">Letter ${fsIdx+1} of ${fsLetters.length}</div>
+    </div>`;
+}
+
+function renderFsStrip(){
+  const strip=document.getElementById("fs-strip");
+  strip.innerHTML=fsLetters.map((l,i)=>`
+    <div class="fs-chip ${i===fsIdx?"active":""}" onclick="fsGoto(${i})" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <span style="font-weight:800;font-size:15px;color:${i===fsIdx?"#58a6ff":"#484f58"};">${l===" "?"_":l}</span>
+    </div>`).join("");
+}
+
+function fsGoto(i){fsIdx=i;fsPlaying=false;clearTimeout(fsPlayTimer);document.getElementById("fs-play-btn").textContent="▶ Auto-play";renderFsFrame();renderFsStrip();}
+function fsPrev(){fsGoto(Math.max(0,fsIdx-1));}
+function fsNext(){fsGoto((fsIdx+1)%fsLetters.length);}
+function toggleFsPlay(){
+  if(fsPlaying){fsPlaying=false;clearTimeout(fsPlayTimer);document.getElementById("fs-play-btn").textContent="▶ Auto-play";}
+  else{fsPlaying=true;document.getElementById("fs-play-btn").textContent="⏸ Pause";fsAutoTick();}
+}
+function fsAutoTick(){
+  if(!fsPlaying)return;
+  fsIdx=(fsIdx+1)%fsLetters.length;
+  renderFsFrame(); renderFsStrip();
+  fsPlayTimer=setTimeout(fsAutoTick,900);
+}
+
+function buildAlphabetGrid(){
+  const grid=document.getElementById("alpha-grid");
+  grid.innerHTML="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l=>`
+    <div class="letter-card" onclick="showLetterDetail('${l}')">
+      <div style="background:#0d1117;border-radius:8px;padding:5px;margin-bottom:5px;display:inline-block;">
+        <img src="${ASL_IMG[l]}" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" alt="${l}"/>
+        <div style="display:none;font-size:30px;font-weight:800;color:#58a6ff;width:56px;height:56px;display:none;align-items:center;justify-content:center;">${HAND_EMOJI[l]}</div>
+      </div>
+      <div style="font-weight:800;font-size:12px;color:#484f58;">${l}</div>
+    </div>`).join("");
+}
+
+function showLetterDetail(l, ev){
+  document.querySelectorAll(".letter-card").forEach(c=>c.classList.remove("active"));
+  if(ev) ev.currentTarget.classList.add("active");
+  else if(window.event) window.event.currentTarget.classList.add("active");
+  const detail=document.getElementById("alpha-detail");
+  detail.style.display="flex";
+  detail.innerHTML=`
+    <div style="background:#0d1117;border:1.5px solid #1e3a5f;border-radius:12px;padding:12px;display:inline-block;flex-shrink:0;">
+      <img src="${ASL_IMG[l]}" style="width:120px;height:120px;object-fit:contain;" onerror="this.style.display='none';" alt="${l}"/>
+    </div>
+    <div>
+      <div style="font-family:'Space Grotesk',system-ui;font-weight:800;font-size:50px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:10px;">${l}</div>
+      <div style="font-size:14px;color:#c9d1d9;line-height:1.85;max-width:340px;background:rgba(37,99,235,.08);padding:10px 14px;border-radius:10px;border-left:3px solid #2563eb;">${LETTER_DESC[l]}</div>
+    </div>`;
+  detail.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIGNS TAB
+// ═══════════════════════════════════════════════════════════════════
+function buildSignsGrid(){
+  const grid=document.getElementById("signs-grid");
+  grid.innerHTML=Object.entries(SIGN_DICT).map(([key,sign])=>`
+    <div class="sign-card" onclick="showSignDetail('${key.replace(/'/g,"\\'")}',this)" id="sign-card-${key.replace(/\s/g,"-")}">
+      <div style="font-size:32px;margin-bottom:6px;display:inline-block;">${sign.emoji}</div>
+      <div style="font-family:'Space Grotesk',system-ui;font-weight:800;font-size:13px;">${key}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;">${sign.desc.slice(0,38)}…</div>
+    </div>`).join("");
+}
+
+let selectedSignKey=null;
+function showSignDetail(key, cardEl){
+  const sign=SIGN_DICT[key]; if(!sign)return;
+  // Toggle
+  if(selectedSignKey===key){
+    selectedSignKey=null;
+    document.getElementById("sign-detail").innerHTML="";
+    cardEl.style.borderColor="var(--border)"; cardEl.style.background="#0d1117";
+    return;
+  }
+  if(selectedSignKey){
+    const prev=document.getElementById("sign-card-"+selectedSignKey.replace(/\s/g,"-"));
+    if(prev){prev.style.borderColor="var(--border)";prev.style.background="#0d1117";}
+  }
+  selectedSignKey=key;
+  cardEl.style.borderColor=sign.color; cardEl.style.background="#0d2040";
+
+  let stepsHtml=(sign.steps||[]).map((step,i)=>`
+    <div class="step-row">
+      <div class="step-num" style="background:${sign.color}22;border:1.5px solid ${sign.color}55;color:${sign.color};">${i+1}</div>
+      <div style="font-size:13px;color:#c9d1d9;line-height:1.75;padding-top:3px;">${step}</div>
+    </div>`).join("");
+
+  document.getElementById("sign-detail").innerHTML=`
+    <div class="card">
+      <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="text-align:center;flex:0 0 auto;">
+          <div class="sign-anim-box" style="background:${sign.color}0d;border:2px solid ${sign.color}44;margin:0 auto;">
+            <span style="font-size:82px;line-height:1;display:block;animation:${sign.anim} 1.5s ease-in-out infinite;filter:drop-shadow(0 0 24px ${sign.color});">${sign.emoji}</span>
+          </div>
+          <div style="margin-top:9px;display:inline-block;padding:3px 12px;background:${sign.color}22;color:${sign.color};border-radius:20px;font-size:11px;font-weight:700;">${(sign.anim||"").toUpperCase()}</div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-family:'Space Grotesk',system-ui;font-weight:800;font-size:24px;color:${sign.color};margin-bottom:6px;">${key}</div>
+          <div style="font-size:13px;color:#94a3b8;margin-bottom:18px;line-height:1.7;background:${sign.color}0d;padding:9px 13px;border-radius:9px;border-left:3px solid ${sign.color};">${sign.desc}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:700;letter-spacing:1px;">STEP BY STEP</div>
+          ${stepsHtml}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("sign-detail").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function lookupSigns(){
+  const q=document.getElementById("signs-query").value.trim();
+  if(!q){toast("Type a word to look up.","error");return;}
+  const signs=parseToSigns(q);
+  renderSignPlayerFull("signs-lookup-result",signs,null,"English");
+  toast(`Found ${signs.length} sign(s) for "${q}"!`,"success");
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════════════
+function addHistory(entry){
+  if(!currentUser)return;
+  const h=DB.getHist(currentUser.email);
+  h.unshift({...entry,ts:new Date().toISOString()});
+  if(h.length>100)h.pop();
+  DB.setHist(currentUser.email,h);
+}
+function renderHistory(){
+  const list=document.getElementById("history-list");
+  if(!currentUser){list.innerHTML="";return;}
+  const h=DB.getHist(currentUser.email);
+  if(!h.length){
+    list.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--muted);"><div style="font-size:48px;margin-bottom:12px;">📭</div>No history yet. Start translating!</div>`;
+    return;
+  }
+  list.innerHTML=h.map(item=>`
+    <div class="hist-item">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="padding:2px 9px;background:rgba(37,99,235,.15);color:#58a6ff;border-radius:20px;font-size:11px;font-weight:700;">${item.type}</span>
+        <span style="padding:2px 9px;background:rgba(245,158,11,.1);color:#d29922;border-radius:20px;font-size:11px;font-weight:700;">🌐 ${item.lang}</span>
+        <span style="margin-left:auto;font-size:12px;color:var(--muted);">${new Date(item.ts).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Input: ${item.input.length>80?item.input.slice(0,80)+"…":item.input}</div>
+      <div style="font-size:15px;font-weight:700;">${item.output}</div>
+    </div>`).join("");
+}
+function clearHistory(){
+  if(!currentUser)return;
+  DB.setHist(currentUser.email,[]);
+  renderHistory();
+  toast("History cleared.","info");
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOASTS
+// ═══════════════════════════════════════════════════════════════════
+function toast(msg, type="info"){
+  const colors={
+    success:{bg:"#051a0e",border:"#238636",color:"#3fb950"},
+    error:{bg:"#1c0a0a",border:"#f85149",color:"#ffa198"},
+    warn:{bg:"#18120a",border:"#d29922",color:"#e3b341"},
+    info:{bg:"#0d1a2e",border:"#2f81f7",color:"#58a6ff"},
+  };
+  const c=colors[type]||colors.info;
+  const id="t"+Date.now();
+  const el=document.createElement("div");
+  el.className="toast";
+  el.id=id;
+  el.style.cssText=`background:${c.bg};border-color:${c.border};color:${c.color};`;
+  el.textContent=msg;
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);},4000);
+}
+</script>
+</body>
+</html>
