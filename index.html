@@ -711,8 +711,9 @@ async function doLogin(){
 
     const uc = await firebase.auth().signInWithEmailAndPassword(email, pass);
     if (!uc.user.emailVerified) {
+      await uc.user.sendEmailVerification();
       await firebase.auth().signOut();
-      showErr("Please verify your email address. Check your inbox.");
+      showErr("Email not verified. We just sent another verification link to your inbox. Please check your Spam/Junk folder!");
       btn.innerHTML = 'Sign In →';
       btn.disabled = false;
       return;
