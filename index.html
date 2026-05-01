@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Silent Voice 🤟</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -406,6 +408,21 @@ label.lbl{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
+// FIREBASE CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+if (typeof firebase !== 'undefined' && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════════
 const ASL_IMG={
@@ -564,11 +581,19 @@ window.onload=()=>{
   buildAlphabetGrid();
   buildSignsGrid();
 
-  const email=DB.getSession();
-  if(email){
-    const u=DB.getUsers()[email];
-    if(u){loginUser(u,false);}
-    else{DB.clearSession();showLanding();}
+  if(typeof firebase !== "undefined" && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) {
+        if(user.emailVerified) {
+          const lang = localStorage.getItem("sv_lang") || "English";
+          loginUser({name: user.displayName || user.email.split("@")[0], email: user.email, lang}, false);
+        } else {
+          showLanding();
+        }
+      } else {
+        showLanding();
+      }
+    });
   } else {
     showLanding();
   }
@@ -627,44 +652,86 @@ function checkApiKeyWarnings(){
 // ═══════════════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════════════
-function doSignup(){
+async function doSignup(){
+  if(typeof firebase === "undefined" || firebaseConfig.apiKey === "YOUR_API_KEY") {
+    alert("DEVELOPER: Please configure Firebase config in index.html to use Authentication.");
+    return;
+  }
   const name=document.getElementById("s-name").value.trim();
   const email=document.getElementById("s-email").value.trim().toLowerCase();
   const pass=document.getElementById("s-pass").value;
   const lang=document.getElementById("s-lang").value;
   const errEl=document.getElementById("s-err");
   const showErr=msg=>{errEl.textContent=msg;errEl.style.display="block";};
+  errEl.style.display="none";
   if(!name||!email||!pass){showErr("Please fill all fields.");return;}
   if(pass.length<6){showErr("Password must be at least 6 characters.");return;}
-  if(!email.includes("@")){showErr("Enter a valid email address.");return;}
-  const users=DB.getUsers();
-  if(users[email]){showErr("Email already registered — please log in.");return;}
-  const u={name,email,pass,lang};
-  users[email]=u; DB.setUsers(users);
-  toast("Account created! Welcome, "+name.split(" ")[0]+" 🎉","success");
-  loginUser(u,true);
+  
+  try {
+    const btn = document.querySelector("#auth-signup button.btn-p");
+    btn.innerHTML = '<span class="spin"></span> Creating...';
+    btn.disabled = true;
+
+    const uc = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    await uc.user.updateProfile({ displayName: name });
+    await uc.user.sendEmailVerification();
+    localStorage.setItem("sv_lang", lang);
+    
+    await firebase.auth().signOut();
+    
+    toast("Account created! Check your email to verify before logging in.", "success");
+    switchAuthMode('login');
+    btn.innerHTML = 'Create Account →';
+    btn.disabled = false;
+  } catch(e) {
+    showErr(e.message);
+    const btn = document.querySelector("#auth-signup button.btn-p");
+    btn.innerHTML = 'Create Account →';
+    btn.disabled = false;
+  }
 }
 
-function doLogin(){
+async function doLogin(){
+  if(typeof firebase === "undefined" || firebaseConfig.apiKey === "YOUR_API_KEY") {
+    alert("DEVELOPER: Please configure Firebase config in index.html to use Authentication.");
+    return;
+  }
   const email=document.getElementById("l-email").value.trim().toLowerCase();
   const pass=document.getElementById("l-pass").value;
   const errEl=document.getElementById("l-err");
   const showErr=msg=>{errEl.textContent=msg;errEl.style.display="block";};
   errEl.style.display="none";
   if(!email||!pass){showErr("Please enter your email and password.");return;}
-  const users=DB.getUsers();
-  const u=users[email];
-  if(!u){showErr("No account found with this email. Please sign up.");return;}
-  if(u.pass!==pass){showErr("Wrong password. Please try again.");return;}
-  toast("Welcome back, "+u.name.split(" ")[0]+" 👋","success");
-  loginUser(u,true);
+
+  try {
+    const btn = document.querySelector("#auth-login button.btn-p");
+    btn.innerHTML = '<span class="spin"></span> Signing in...';
+    btn.disabled = true;
+
+    const uc = await firebase.auth().signInWithEmailAndPassword(email, pass);
+    if (!uc.user.emailVerified) {
+      await firebase.auth().signOut();
+      showErr("Please verify your email address. Check your inbox.");
+      btn.innerHTML = 'Sign In →';
+      btn.disabled = false;
+      return;
+    }
+    toast("Welcome back, " + (uc.user.displayName||"").split(" ")[0] + " 👋", "success");
+    btn.innerHTML = 'Sign In →';
+    btn.disabled = false;
+    // The onAuthStateChanged listener will automatically show the app
+  } catch (e) {
+    showErr("Invalid email or password.");
+    const btn = document.querySelector("#auth-login button.btn-p");
+    btn.innerHTML = 'Sign In →';
+    btn.disabled = false;
+  }
 }
 
 function loginUser(u,navigate){
   currentUser=u;
-  DB.setSession(u.email);
-  document.getElementById("user-avatar").textContent=u.name[0].toUpperCase();
-  document.getElementById("user-name").textContent=u.name.split(" ")[0];
+  document.getElementById("user-avatar").textContent=(u.name||"U")[0].toUpperCase();
+  document.getElementById("user-name").textContent=(u.name||"User").split(" ")[0];
   // Pre-select preferred language in all selects
   ["t2s-lang","audio-lang","v2t-lang","cam-lang"].forEach(id=>{
     const el=document.getElementById(id);
@@ -677,9 +744,12 @@ function loginUser(u,navigate){
 function doLogout(){
   stopCam();
   stopListening();
-  DB.clearSession();
   currentUser=null;
-  showLanding();
+  if(typeof firebase !== "undefined" && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    firebase.auth().signOut();
+  } else {
+    showLanding();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
